@@ -1,0 +1,94 @@
+kind: CustomResourceStateMetrics
+spec:
+  resources:
+    - groupVersionKind:
+        group: "build.openshift.io"
+        version: "v1"
+        kind: "Build"
+      metrics:
+        - name: "openshift_build_created_timestamp_seconds"
+          help: "Unix creation timestamp"
+          each:
+            type: Gauge
+            gauge:
+              path: [metadata]
+              valueFrom: [creationTimestamp]
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+        - name: "openshift_build_metadata_generation_info"
+          help: "Sequence number representing a specific generation of the desired state."
+          each:
+            type: Gauge
+            gauge:
+              path: [metadata]
+              valueFrom: [generation]
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+        - name: "openshift_build_labels"
+          help: "Kubernetes labels converted to Prometheus labels."
+          each:
+            type: Info
+            info:
+              path: [metadata]
+              labelsFromPath:
+                "*": [labels]
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+        - name: "openshift_build_status_phase_total"
+          help: "The build phase."
+          each:
+            type: StateSet
+            stateSet:
+              path: [status, phase]
+              list: [Complete, Cancelled, New, Pending, Running, Failed, Error]
+              labelName: build_phase
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+        - name: "openshift_build_created_timestamp_seconds"
+          help: "Start time of the build"
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [startTimestamp]
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+        - name: "openshift_build_completed_timestamp_seconds"
+          help: "Completion time of the build"
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [completionTimestamp]
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+        - name: "openshift_build_duration_seconds"
+          help: "Duration of the build"
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [duration]
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]

@@ -1,0 +1,52 @@
+kind: CustomResourceStateMetrics
+spec:
+  resources:
+    - groupVersionKind:
+        group: "route.openshift.io"
+        version: "v1"
+        kind: "Route"
+      metrics:
+        - name: "openshift_route_created"
+          help: "Unix creation timestamp"
+          each:
+            type: Gauge
+            gauge:
+              path: [metadata]
+              labelsFromPath:
+                route: [name]
+                namespace: [namespace]
+              valueFrom: [creationTimestamp]
+        - name: "openshift_route_info"
+          help: "Information about route."
+          each:
+            type: Info
+            info:
+              labelsFromPath:
+                namespace: [metadata, namespace]
+                host: [spec, host]
+                path: [spec, path]
+                tls_termination: [spec, tls, termination]
+                to_kind: [spec, to, kind]
+                to_name: [spec, to, name]
+                to_weight: [spec, to, weight]
+        - name: "openshift_route_status"
+          help: "Information about route status."
+          each:
+            type: Info
+            info:
+              path: [status, ingress]
+              labelsFromPath:
+                status: [conditions, "0", status]
+                type: [conditions, "0", type]
+                host: [host]
+                router_name: [routerName]
+        - name: "openshift_route_labels"
+          help: "Kubernetes labels converted to Prometheus labels."
+          each:
+            type: Info
+            info:
+              path: [metadata]
+              labelsFromPath:
+                  route: [name]
+                  namespace: [namespace]
+                  "*": [labels]

@@ -1,0 +1,117 @@
+kind: CustomResourceStateMetrics
+spec:
+  resources:
+    - groupVersionKind:
+        group: "apps.openshift.io"
+        version: "v1"
+        kind: "DeploymentConfig"
+      metrics:
+        - name: "openshift_deploymentconfig_created"
+          help: "Unix creation timestamp"
+          each:
+            type: Gauge
+            gauge:
+              labelsFromPath:
+                deploymentconfig: [metadata, name]
+                namespace: [metadata, namespace]
+              valueFrom: [creationTimestamp]
+        - name: "openshift_deploymentconfig_status_replicas"
+          help: "The number of replicas per deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [replicas]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_status_replicas_available"
+          help: "The number of available replicas per deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [availableReplicas]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_status_replicas_unavailable"
+          help: "The number of unavailable replicas per deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [unavailableReplicas]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_status_replicas_updated"
+          help: "The number of updated replicas per deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [updatedReplicas]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_status_observed_generation"
+          help: "The generation observed by the deployment controller."
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [observedGeneration]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_spec_replicas"
+          help: "Number of desired pods for a deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [spec]
+              valueFrom: [replicas]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_spec_paused"
+          help: "Whether the deployment is paused and will not be processed by the deployment controller."
+          each:
+            type: Gauge
+            gauge:
+              path: [spec]
+              valueFrom: [paused]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_spec_strategy_rollingupdate_max_unavailable"
+          help: "Maximum number of unavailable replicas during a rolling update of a deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [spec, strategy, rollingParams]
+              valueFrom: [maxUnavailable]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_spec_strategy_rollingupdate_max_surge"
+          help: "Maximum number of replicas that can be scheduled above the desired number of replicas during a rolling update of a deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [spec, strategy, rollingParams]
+              valueFrom: [maxSurge]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_metadata_generation"
+          help: "Sequence number representing a specific generation of the desired state."
+          each:
+            type: Gauge
+            gauge:
+              path: [metadata]
+              valueFrom: [generation]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]

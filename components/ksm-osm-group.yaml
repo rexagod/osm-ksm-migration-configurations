@@ -1,0 +1,26 @@
+kind: CustomResourceStateMetrics
+spec:
+  resources:
+    - groupVersionKind:
+        group: "user.openshift.io"
+        version: "v1"
+        kind: "Group"
+      metrics:
+        - name: "openshift_group_created"
+          help: "Unix creation timestamp"
+          each:
+            type: Gauge
+            gauge:
+              labelsFromPath:
+                group: [metadata, name]
+              valueFrom: [creationTimestamp]
+        - name: "openshift_group_user_account"
+          help: "User account in a group."
+          each:
+            type: Info
+            info:
+              path: [users]
+              labelsFromPath:
+                user: []
+          labelsFromPath:
+            group: [metadata, name]

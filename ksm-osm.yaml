@@ -1,0 +1,506 @@
+kind: CustomResourceStateMetrics
+spec:
+  resources:
+    - groupVersionKind:
+        group: "build.openshift.io"
+        version: "v1"
+        kind: "BuildConfig"
+      metrics:
+        - name: "openshift_buildconfig_created"
+          help: "Unix creation timestamp"
+          each:
+            type: Gauge
+            gauge:
+              path: [metadata]
+              labelsFromPath:
+                buildconfig: [name]
+                namespace: [namespace]
+              valueFrom: [creationTimestamp]
+        - name: "openshift_buildconfig_metadata_generation"
+          help: "Sequence number representing a specific generation of the desired state."
+          each:
+            type: Gauge
+            gauge:
+              path: [metadata]
+              labelsFromPath:
+                buildconfig: [name]
+                namespace: [namespace]
+              valueFrom: [generation]
+        - name: "openshift_buildconfig_status_latest_version"
+          help: "The latest version of buildconfig."
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [lastVersion]
+          labelsFromPath:
+            buildconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_buildconfig_labels"
+          help: "Kubernetes labels converted to Prometheus labels."
+          each:
+            type: Info
+            info:
+              path: [metadata]
+              labelsFromPath:
+                buildconfig: [name]
+                namespace: [namespace]
+                "*": [labels]
+    - groupVersionKind:
+        group: "build.openshift.io"
+        version: "v1"
+        kind: "Build"
+      metrics:
+        - name: "openshift_build_created_timestamp_seconds"
+          help: "Unix creation timestamp"
+          each:
+            type: Gauge
+            gauge:
+              path: [metadata]
+              valueFrom: [creationTimestamp]
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+        - name: "openshift_build_metadata_generation_info"
+          help: "Sequence number representing a specific generation of the desired state."
+          each:
+            type: Gauge
+            gauge:
+              path: [metadata]
+              valueFrom: [generation]
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+        - name: "openshift_build_labels"
+          help: "Kubernetes labels converted to Prometheus labels."
+          each:
+            type: Info
+            info:
+              path: [metadata]
+              labelsFromPath:
+                "*": [labels]
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+        - name: "openshift_build_status_phase_total"
+          help: "The build phase."
+          each:
+            type: StateSet
+            stateSet:
+              path: [status, phase]
+              list: [Complete, Cancelled, New, Pending, Running, Failed, Error]
+              labelName: build_phase
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+        - name: "openshift_build_created_timestamp_seconds"
+          help: "Start time of the build"
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [startTimestamp]
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+        - name: "openshift_build_completed_timestamp_seconds"
+          help: "Completion time of the build"
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [completionTimestamp]
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+        - name: "openshift_build_duration_seconds"
+          help: "Duration of the build"
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [duration]
+          labelsFromPath:
+            build: [metadata, name]
+            namespace: [metadata, namespace]
+            strategy: [spec, strategy, type]
+            buildconfig: [status, config, name]
+    - groupVersionKind:
+        group: "route.openshift.io"
+        version: "v1"
+        kind: "Route"
+      metrics:
+        - name: "openshift_route_created"
+          help: "Unix creation timestamp"
+          each:
+            type: Gauge
+            gauge:
+              path: [metadata]
+              labelsFromPath:
+                route: [name]
+                namespace: [namespace]
+              valueFrom: [creationTimestamp]
+        - name: "openshift_route_info"
+          help: "Information about route."
+          each:
+            type: Info
+            info:
+              labelsFromPath:
+                namespace: [metadata, namespace]
+                host: [spec, host]
+                path: [spec, path]
+                tls_termination: [spec, tls, termination]
+                to_kind: [spec, to, kind]
+                to_name: [spec, to, name]
+                to_weight: [spec, to, weight]
+        - name: "openshift_route_status"
+          help: "Information about route status."
+          each:
+            type: Info
+            info:
+              path: [status, ingress]
+              labelsFromPath:
+                status: [conditions, "0", status]
+                type: [conditions, "0", type]
+                host: [host]
+                router_name: [routerName]
+        - name: "openshift_route_labels"
+          help: "Kubernetes labels converted to Prometheus labels."
+          each:
+            type: Info
+            info:
+              path: [metadata]
+              labelsFromPath:
+                  route: [name]
+                  namespace: [namespace]
+                  "*": [labels]
+    - groupVersionKind:
+        group: "user.openshift.io"
+        version: "v1"
+        kind: "Group"
+      metrics:
+        - name: "openshift_group_created"
+          help: "Unix creation timestamp"
+          each:
+            type: Gauge
+            gauge:
+              labelsFromPath:
+                group: [metadata, name]
+              valueFrom: [creationTimestamp]
+        - name: "openshift_group_user_account"
+          help: "User account in a group."
+          each:
+            type: Info
+            info:
+              path: [users]
+              labelsFromPath:
+                user: []
+          labelsFromPath:
+            group: [metadata, name]
+    - groupVersionKind:
+        group: "apps.openshift.io"
+        version: "v1"
+        kind: "DeploymentConfig"
+      metrics:
+        - name: "openshift_deploymentconfig_created"
+          help: "Unix creation timestamp"
+          each:
+            type: Gauge
+            gauge:
+              labelsFromPath:
+                deploymentconfig: [metadata, name]
+                namespace: [metadata, namespace]
+              valueFrom: [creationTimestamp]
+        - name: "openshift_deploymentconfig_status_replicas"
+          help: "The number of replicas per deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [replicas]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_status_replicas_available"
+          help: "The number of available replicas per deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [availableReplicas]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_status_replicas_unavailable"
+          help: "The number of unavailable replicas per deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [unavailableReplicas]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_status_replicas_updated"
+          help: "The number of updated replicas per deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [updatedReplicas]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_status_observed_generation"
+          help: "The generation observed by the deployment controller."
+          each:
+            type: Gauge
+            gauge:
+              path: [status]
+              valueFrom: [observedGeneration]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_spec_replicas"
+          help: "Number of desired pods for a deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [spec]
+              valueFrom: [replicas]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_spec_paused"
+          help: "Whether the deployment is paused and will not be processed by the deployment controller."
+          each:
+            type: Gauge
+            gauge:
+              path: [spec]
+              valueFrom: [paused]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_spec_strategy_rollingupdate_max_unavailable"
+          help: "Maximum number of unavailable replicas during a rolling update of a deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [spec, strategy, rollingParams]
+              valueFrom: [maxUnavailable]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_spec_strategy_rollingupdate_max_surge"
+          help: "Maximum number of replicas that can be scheduled above the desired number of replicas during a rolling update of a deployment."
+          each:
+            type: Gauge
+            gauge:
+              path: [spec, strategy, rollingParams]
+              valueFrom: [maxSurge]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+        - name: "openshift_deploymentconfig_metadata_generation"
+          help: "Sequence number representing a specific generation of the desired state."
+          each:
+            type: Gauge
+            gauge:
+              path: [metadata]
+              valueFrom: [generation]
+          labelsFromPath:
+            deploymentconfig: [metadata, name]
+            namespace: [metadata, namespace]
+    - groupVersionKind:
+        group: "quota.openshift.io"
+        version: "v1"
+        kind: "ClusterResourceQuota"
+      metrics:
+        - name: "openshift_clusterresourcequota_created"
+          help: "Unix creation timestamp"
+          each:
+            type: Gauge
+            gauge:
+              labelsFromPath:
+                name: [metadata, name]
+                namespace: [metadata, namespace]
+              valueFrom: [creationTimestamp]
+        - name: "openshift_clusterresourcequota_labels"
+          help: "Kubernetes labels converted to Prometheus labels"
+          each:
+            type: Info
+            info:
+              path: [metadata]
+              labelsFromPath:
+                  name: [name]
+                  namespace: [namespace]
+                  # needs to be prefixed with "label_"
+                  "*": [labels]
+        - name: "openshift_clusterresourcequota_usage_1_hard"
+          help: "Usage about resource quota"
+          commonLabels:
+            type: "hard"
+            resource: "pods"
+          each:
+            type: Gauge
+            gauge:
+              path: [spec, quota, hard]
+              valueFrom: [pods] # not dynamic
+          labelsFromPath:
+              name: [metadata, name]
+        - name: "openshift_clusterresourcequota_usage_1_hard_fromKey"
+          help: "Usage about resource quota"
+          each:
+            type: Info
+            info:
+              path: [spec, quota]
+              labelFromKey: hard
+        - name: "openshift_clusterresourcequota_usage_2_hard"
+          help: "Usage about resource quota"
+          each:
+            type: Gauge
+            gauge:
+              path: [spec, quota, hard]
+              valueFrom: [secrets]
+          labelsFromPath:
+              name: [metadata, name]
+              resource: [ "secrets" ]
+              "*": [spec, quota, hard]
+        - name: "openshift_clusterresourcequota_usage_2_hard_fromKey"
+          help: "Usage about resource quota"
+          each:
+            type: Info
+            info:
+              path: [spec, quota]
+              labelFromKey: hard
+        - name: "openshift_clusterresourcequota_usage_1_used"
+          help: "Usage about resource quota"
+          commonLabels:
+            type: "used"
+          each:
+            type: Gauge
+            gauge:
+              path: [status, total, used]
+              valueFrom: [pods]
+          labelsFromPath:
+              name: [metadata, name]
+              resource: [ "pods" ]
+              "*": [status, total, used]
+        - name: "openshift_clusterresourcequota_usage_1_used_fromKey"
+          help: "Usage about resource quota"
+          each:
+            type: Info
+            info:
+              path: [status, total]
+              labelFromKey: used
+        - name: "openshift_clusterresourcequota_usage_2_used"
+          help: "Usage about resource quota"
+          commonLabels:
+            type: "used"
+          each:
+            type: Gauge
+            gauge:
+              path: [status, total, used]
+              valueFrom: [secrets]
+          labelsFromPath:
+              name: [metadata, name]
+              resource: [ "secrets" ]
+              "*": [status, total, used]
+        - name: "openshift_clusterresourcequota_usage_2_used_fromKey"
+          help: "Usage about resource quota"
+          each:
+            type: Info
+            info:
+              path: [status, total]
+              labelFromKey: used
+        - name: "openshift_clusterresourcequota_namespace_usage_1_hard"
+          help: "Usage about clusterresource quota per namespace"
+          commonLabels:
+            type: "hard"
+          each:
+            type: Gauge
+            gauge:
+              path: [status, namespaces, status]
+              valueFrom: [hard]
+          labelsFromPath:
+              name: [metadata, name]
+              namespace: [metadata, namespace]
+              resource: [ "pods" ]
+              "*": [status, namespaces, status]
+        - name: "openshift_clusterresourcequota_usage_1_hard_fromKey"
+          help: "Usage about resource quota"
+          each:
+            type: Info
+            info:
+              path: [status, namespaces]
+              labelFromKey: status
+        - name: "openshift_clusterresourcequota_namespace_usage_2_used"
+          help: "Usage about clusterresource quota per namespace"
+          commonLabels:
+            type: "used"
+          each:
+            type: Gauge
+            gauge:
+              path: [status, namespaces, status]
+              valueFrom: [used]
+          labelsFromPath:
+              name: [metadata, name]
+              namespace: [metadata, namespace]
+              resource: [ "secrets" ]
+              "*": [status, namespaces, status]
+        - name: "openshift_clusterresourcequota_namespace_usage_2_used_fromKey"
+          help: "Usage about clusterresource quota per namespace"
+          each:
+            type: Info
+            info:
+              path: [status, namespaces]
+              labelFromKey: status
+        - name: "openshift_clusterresourcequota_selector_1"
+          help: "Selector of clusterresource quota, which defines the affected namespaces"
+          commonLabels:
+            type: "annotation"
+          each:
+            type: Info
+            info:
+              path: [spec, selector]
+              labelsFromPath:
+                "*": [annotations]
+          labelsFromPath:
+            name: [metadata, name]
+        - name: "openshift_clusterresourcequota_selector_2"
+          help: "Selector of clusterresource quota, which defines the affected namespaces"
+          commonLabels:
+            type: "annotation"
+          each:
+            type: Info
+            info:
+              path: [spec, selector, labels]
+              labelsFromPath:
+                "*": [matchLabels]
+          labelsFromPath:
+            name: [metadata, name]
+        - name: "openshift_clusterresourcequota_selector_3"
+          help: "Selector of clusterresource quota, which defines the affected namespaces"
+          commonLabels:
+            type: "annotation"
+          each:
+            type: Info
+            info:
+              path: [spec, selector, labels]
+              labelsFromPath:
+                "*": [matchExpressions]
+                operator: [matchExpressions, operator]
+          labelsFromPath:
+            name: [metadata, name]
