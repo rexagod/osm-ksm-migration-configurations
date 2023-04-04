@@ -6,6 +6,19 @@ scrape_configs:
   - job_name: "prometheus"
     static_configs:
       - targets: ["127.0.0.1:8080"]
-    relabel_configs:
+    metric_relabel_configs:
+      # Remove extraneous CRS labels appended by KSM.
       - regex: "customresource_group|customresource_kind|customresource_version"
         action: "labeldrop"
+      # Remove unnecessary prefix added by KSM in CRS metrics.
+      - source_labels: [__name__]
+        regex: "kube_customresource_(.*)"
+        replacement: "${1}"
+        target_label: __name__
+      # # Add "label_" prefix to label-metrics.
+      # - regex: "(openshift_io_.*)"
+      #   replacement: "label_${1}"
+      #   action: "labelmap"
+      # Drop redundant labels left from earlier.
+      # - regex: "openshift_io_.*"
+      #   action: "labeldrop"

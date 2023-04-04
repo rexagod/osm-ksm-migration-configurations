@@ -25,45 +25,19 @@ spec:
                   name: [name]
                   namespace: [namespace]
                   # needs to be prefixed with "label_"
-                  "*": [labels]
-        - name: "openshift_clusterresourcequota_usage_1_hard"
+                  "label_*": [labels]
+        - name: "openshift_clusterresourcequota_usage_hard"
           help: "Usage about resource quota"
           commonLabels:
             type: "hard"
-            resource: "pods"
           each:
             type: Gauge
             gauge:
               path: [spec, quota, hard]
-              valueFrom: [pods] # not dynamic
           labelsFromPath:
               name: [metadata, name]
-        - name: "openshift_clusterresourcequota_usage_1_hard_fromKey"
-          help: "Usage about resource quota"
-          each:
-            type: Info
-            info:
-              path: [spec, quota]
-              labelFromKey: hard
-        - name: "openshift_clusterresourcequota_usage_2_hard"
-          help: "Usage about resource quota"
-          each:
-            type: Gauge
-            gauge:
-              path: [spec, quota, hard]
-              valueFrom: [secrets]
-          labelsFromPath:
-              name: [metadata, name]
-              resource: [ "secrets" ]
               "*": [spec, quota, hard]
-        - name: "openshift_clusterresourcequota_usage_2_hard_fromKey"
-          help: "Usage about resource quota"
-          each:
-            type: Info
-            info:
-              path: [spec, quota]
-              labelFromKey: hard
-        - name: "openshift_clusterresourcequota_usage_1_used"
+        - name: "openshift_clusterresourcequota_usage_used"
           help: "Usage about resource quota"
           commonLabels:
             type: "used"
@@ -71,81 +45,10 @@ spec:
             type: Gauge
             gauge:
               path: [status, total, used]
-              valueFrom: [pods]
           labelsFromPath:
               name: [metadata, name]
-              resource: [ "pods" ]
               "*": [status, total, used]
-        - name: "openshift_clusterresourcequota_usage_1_used_fromKey"
-          help: "Usage about resource quota"
-          each:
-            type: Info
-            info:
-              path: [status, total]
-              labelFromKey: used
-        - name: "openshift_clusterresourcequota_usage_2_used"
-          help: "Usage about resource quota"
-          commonLabels:
-            type: "used"
-          each:
-            type: Gauge
-            gauge:
-              path: [status, total, used]
-              valueFrom: [secrets]
-          labelsFromPath:
-              name: [metadata, name]
-              resource: [ "secrets" ]
-              "*": [status, total, used]
-        - name: "openshift_clusterresourcequota_usage_2_used_fromKey"
-          help: "Usage about resource quota"
-          each:
-            type: Info
-            info:
-              path: [status, total]
-              labelFromKey: used
-        - name: "openshift_clusterresourcequota_namespace_usage_1_hard"
-          help: "Usage about clusterresource quota per namespace"
-          commonLabels:
-            type: "hard"
-          each:
-            type: Gauge
-            gauge:
-              path: [status, namespaces, status]
-              valueFrom: [hard]
-          labelsFromPath:
-              name: [metadata, name]
-              namespace: [metadata, namespace]
-              resource: [ "pods" ]
-              "*": [status, namespaces, status]
-        - name: "openshift_clusterresourcequota_usage_1_hard_fromKey"
-          help: "Usage about resource quota"
-          each:
-            type: Info
-            info:
-              path: [status, namespaces]
-              labelFromKey: status
-        - name: "openshift_clusterresourcequota_namespace_usage_2_used"
-          help: "Usage about clusterresource quota per namespace"
-          commonLabels:
-            type: "used"
-          each:
-            type: Gauge
-            gauge:
-              path: [status, namespaces, status]
-              valueFrom: [used]
-          labelsFromPath:
-              name: [metadata, name]
-              namespace: [metadata, namespace]
-              resource: [ "secrets" ]
-              "*": [status, namespaces, status]
-        - name: "openshift_clusterresourcequota_namespace_usage_2_used_fromKey"
-          help: "Usage about clusterresource quota per namespace"
-          each:
-            type: Info
-            info:
-              path: [status, namespaces]
-              labelFromKey: status
-        - name: "openshift_clusterresourcequota_selector_1"
+        - name: "openshift_clusterresourcequota_selector_annotations"
           help: "Selector of clusterresource quota, which defines the affected namespaces"
           commonLabels:
             type: "annotation"
@@ -157,7 +60,7 @@ spec:
                 "*": [annotations]
           labelsFromPath:
             name: [metadata, name]
-        - name: "openshift_clusterresourcequota_selector_2"
+        - name: "openshift_clusterresourcequota_selector_labels_matchLabels"
           help: "Selector of clusterresource quota, which defines the affected namespaces"
           commonLabels:
             type: "annotation"
@@ -169,7 +72,7 @@ spec:
                 "*": [matchLabels]
           labelsFromPath:
             name: [metadata, name]
-        - name: "openshift_clusterresourcequota_selector_3"
+        - name: "openshift_clusterresourcequota_selector_labels_matchExpressions"
           help: "Selector of clusterresource quota, which defines the affected namespaces"
           commonLabels:
             type: "annotation"
